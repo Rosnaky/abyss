@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "cuda_interop.h"
 
 static const char* vertexShaderSource = R"(
 #version 450 core
@@ -27,9 +28,11 @@ static const char* fragmentShaderSource = R"(
 in vec2 uv;
 out vec4 fragColor;
 
+uniform sampler2D screenTexture;
+
 void main()
 {
-    fragColor = vec4(uv, 0.0, 1.0);
+    fragColor = texture(screenTexture, uv);
 }
 )";
 
@@ -103,10 +106,28 @@ int main() {
 
     std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
 
+    // Vertex Array
     GLuint program = createProgram(vertexShaderSource, fragmentShaderSource);
 
     GLuint emptyVAO;
     glGenVertexArrays(1, &emptyVAO);
+
+    // Textures
+    GLuint screenTex;
+    glGenTextures(1, &screenTex);
+    glBindTexture(GL_TEXTURE_2D, screenTex);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 1280, 720, 0, GL_RGBA, GL_FLOAT, nullptr);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Cuda
+    initCudaInterop(screenTex);
 
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
@@ -116,7 +137,10 @@ int main() {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        renderFrame(1280, 720, static_cast<float>(glfwGetTime()));
         glUseProgram(program);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, screenTex);
         glBindVertexArray(emptyVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -124,6 +148,8 @@ int main() {
         glfwPollEvents();
     }
 
+    cleanupCudaInterop();
+    glDeleteTextures(1, &screenTex);
     glDeleteVertexArrays(1, &emptyVAO);
     glDeleteProgram(program);
     glfwDestroyWindow(window);

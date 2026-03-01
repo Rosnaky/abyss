@@ -17,6 +17,7 @@ target_include_directories(glad PUBLIC glad/include)
 
 set(SOURCES
     src/main.cpp
+    src/cuda_interop.cu
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -28,7 +29,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/inc
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
