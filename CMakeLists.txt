@@ -18,6 +18,8 @@ target_include_directories(glad PUBLIC glad/include)
 set(SOURCES
     src/main.cpp
     src/cuda_interop.cu
+    src/camera.cu
+    src/schwarzschild.cu
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
