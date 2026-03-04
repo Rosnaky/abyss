@@ -10,31 +10,29 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 
 add_library(glad STATIC
-    glad/src/glad.c
+glad/src/glad.c
 )
 
 target_include_directories(glad PUBLIC glad/include)
 
-set(SOURCES
-    src/main.cpp
-    src/cuda_interop.cu
-    src/camera.cu
-    src/schwarzschild.cu
-)
+file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.cu")
+file(GLOB METRIC_SOURCES CONFIGURE_DEPENDS "src/metrics/*.cu")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${METRIC_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    OpenGL::GL
+OpenGL::GL
     glfw
     glad
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/inc
+${CMAKE_SOURCE_DIR}/inc
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CUDA_ARCHITECTURES "75;86"
+CUDA_ARCHITECTURES "75;86"
 )
-
+set_target_properties(blackhole-sim PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+)

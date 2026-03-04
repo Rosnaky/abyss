@@ -6,13 +6,13 @@ namespace schwarzschild {
     static constexpr float DISK_TEMP_OUTER_K = 1500.0f;
 
 
-    __device__ inline float rs(float M) {
+    __device__ float rs(float M) {
         return 2.0f * M;
     }
 
     // d^2r/dλ^2 = -1.5 * r_s * h^2 / r^4
     // Derived in the attic
-    __device__ inline float3 geodesicAccel(float3 pos, float3 vel, float M) {
+    __device__ float3 geodesicAccel(float3 pos, float3 vel, float M) {
         float r2 = dot(pos, pos);
         float r = sqrtf(r2);
         float r5 = r2 * r2 * r;
@@ -27,7 +27,7 @@ namespace schwarzschild {
     }
 
     // TODO: Add redshift
-    __device__ inline TraceResult trace(
+    __device__ TraceResult trace(
         float3 rayPos,
         float3 rayDir,
         float M,
@@ -113,10 +113,12 @@ namespace schwarzschild {
                 return result;
             }
         }
+
+        return result;
     }
 
     // Implementation: https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
-    __device__ inline float3 getBlackbodyColor(float tempKelvin) {
+    __device__ float3 getBlackbodyColor(float tempKelvin) {
         float tmp = tempKelvin / 100.0f;
         float red = 0.0f;
         float green = 0.0f;
@@ -152,6 +154,4 @@ namespace schwarzschild {
             fmaxf(0.0f, fminf(255.0f, blue)) / 255.0f
         );
     }
-
 }
-
