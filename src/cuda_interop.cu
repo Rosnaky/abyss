@@ -51,7 +51,7 @@ void renderFrame(int width, int height, float time) {
     // Orbit around black hole
     Camera cam;
     float angle = time * 0.1f;
-    float camDist = 15.0f + sinf(time * 10 / 3.14);
+    float camDist = 15.0f;
     float3 target = make_float3(0.0f, 0.0f, 0.0f);
     float3 worldUp = make_float3(0.0f, 1.0f, 0.0f);
 
