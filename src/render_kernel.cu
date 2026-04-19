@@ -17,7 +17,7 @@ __global__ void renderKernel(
 
     float M = 1.0f;
     float diskInner = 3.0f * schwarzschild::rs(M);
-    float diskOuter = 12.0f;
+    float diskOuter = 4.0f * schwarzschild::rs(M);
     int maxSteps = 1000;
     float dt = 0.05f;
 

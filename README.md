@@ -5,7 +5,8 @@ Real-time black hole renderer using GPU-accelerated ray tracing through curved s
 Traces photon geodesics in the Schwarzschild metric to visualize gravitational lensing, the photon sphere, Einstein rings, and accretion disk emission. Built with CUDA/OpenGL interop. CUDA computes the physics, OpenGL displays the result.
 
 #### Schwarzschild Model
-![Image of rendered blachole using Schwarzschild model](docs/schwarzschild_model.png)
+![Image of rendered blachole using Schwarzschild model](docs/schwarzschild_model_0.png)
+![Image of rendered blachole using Schwarzschild model](docs/schwarzschild_model_1.png)
 
 ## Stack
 

@@ -22,19 +22,6 @@ void initCudaInterop(unsigned int glTexture) {
     }
 }
 
-__global__ void testKernel(cudaSurfaceObject_t surface, int width, int height, float time) {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (x >= width || y >= height) return;
-
-    float u = (float)x / (float)width;
-    float v = (float)y / (float)height;
-
-    float4 color = make_float4(u, v, sinf(time) * 0.5f, 1.0f);
-    surf2Dwrite(color, surface, x * sizeof(float4), y);
-}
-
 void renderFrame(int width, int height, float time) {
     cudaGraphicsMapResources(1, &cudaTexResource, 0);
 
