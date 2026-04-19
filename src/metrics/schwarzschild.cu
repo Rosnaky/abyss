@@ -96,11 +96,37 @@ namespace schwarzschild {
                 float rDisk = length(make_float3(intersectPos.x, 0, intersectPos.z)); // y is zero
                 if (rDisk > diskInner && rDisk < diskOuter) {
                     result.hitDisk = true;
+                    
                     // Temperature is hotter when closer, and is more blue
                     // Blackbody temperatures https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
                     float temp_scalar = 1.0 - (rDisk - diskInner) / (diskOuter - diskInner);
                     result.diskTemperature = temp_scalar * (DISK_TEMP_INNER_K - DISK_TEMP_OUTER_K) + DISK_TEMP_OUTER_K;
                     result.color = getBlackbodyColor(result.diskTemperature);
+                    
+                    // Doppler beaming
+                    float vOrbit = sqrtf(M / rDisk); // Keplerian orbital velocity
+                    float3 diskTanget = make_float3(-intersectPos.z / rDisk, 0.0f, intersectPos.x / rDisk); // If radial = (x, 0, z)/rDisk, perpendicular is (-z, 0, x)/rDisk
+                    float3 vDisk = diskTanget * vOrbit;
+
+                    float3 photonDir = normalize(vel);
+                    float vDotP = dot(vDisk, photonDir);
+                    float gamma = 1.0f / sqrtf(1.0f - vOrbit * vOrbit);
+                    float doppler = 1.0f / (gamma * (1.0f - vDotP));
+
+                    // Gravitational redshit
+                    float gGrav = sqrtf(1.0f - r_s / rDisk);
+                    float g = doppler * gGrav; // Combined shift
+
+                    // Apply shift
+                    // Intensity increases by g^3
+                    float boosted = g * g * g;
+
+                    result.color = make_float3(
+                        result.color.x * boosted,
+                        result.color.y * boosted,
+                        result.color.z * boosted
+                    );
+                    
                     return result;
                 }
             }
