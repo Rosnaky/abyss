@@ -129,7 +129,19 @@ int main() {
     // Cuda
     initCudaInterop(screenTex);
 
+    // Frames per second
+    double targetFPS = 30.0;
+    double frameDuration = 1.0f / targetFPS;
+    double lastTime = glfwGetTime();
+
     while (!glfwWindowShouldClose(window)) {
+        double now = glfwGetTime();
+        if (now - lastTime < frameDuration) {
+            glfwPollEvents();
+            continue;
+        }
+        lastTime = now;
+
         if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
             glfwSetWindowShouldClose(window, true);
         }
